@@ -1,9 +1,9 @@
 {
   "variants": {
     "facing=down,powered=false": {
-    "model": "genindustry_bees:block/genome_extractor",
-    "x": 90
-  },
+      "model": "genindustry_bees:block/genome_extractor",
+      "x": 90
+    },
     "facing=down,powered=true": {
       "model": "genindustry_bees:block/genome_extractor_active",
       "x": 90

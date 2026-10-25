@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="GPL-3.0-only"
+[[mods]]
+modId="genindustry_bees"
+version="${mod_version}"
+displayName="Complicated Bees: Genetic Industry"
+authors="TheSmartNoob880"
+description='''Gene extraction, templates and imprinting for Complicated Bees. Unofficial 26.x port.'''
+[[dependencies.genindustry_bees]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.genindustry_bees]]
+modId="minecraft"
+type="required"
+versionRange="[${minecraft_version}]"
+ordering="NONE"
+side="BOTH"
+[[dependencies.genindustry_bees]]
+modId="complicated_bees"
+type="required"
+versionRange="[3.6.2,)"
+ordering="AFTER"
+side="BOTH"

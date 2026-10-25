@@ -1,7 +1,0 @@
-{
-  "type": "genindustry_bees:furnace_recycling",
-  "item":{
-    "item": "genindustry_bees:genetic_template"
-  },
-  "time": 200
-}

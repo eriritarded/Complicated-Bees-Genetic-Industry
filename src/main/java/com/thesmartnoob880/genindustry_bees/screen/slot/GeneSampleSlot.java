@@ -3,8 +3,8 @@ package com.thesmartnoob880.genindustry_bees.screen.slot;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import static com.thesmartnoob880.genindustry_bees.item.geneSampleItem.KEY_GENE_NAME;
 import static com.thesmartnoob880.genindustry_bees.item.geneSampleItem.KEY_GENE_VALUE;
@@ -19,11 +19,11 @@ public class GeneSampleSlot extends SlotItemHandler {
 
     public boolean mayPlace(ItemStack stack) {
         if (stack.is(this.itemTagKey)){
-            if (!stack.hasTag()){
+            if (!com.thesmartnoob880.genindustry_bees.port.GeneticData.has(stack)){
                 return true;
             }
-            assert stack.getTag() !=null;
-            return !(stack.getTag().contains(KEY_GENE_NAME) && stack.getTag().contains(KEY_GENE_VALUE));
+            assert com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack) !=null;
+            return !(com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack).contains(KEY_GENE_NAME) && com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack).contains(KEY_GENE_VALUE));
         } else {
             return false;
         }

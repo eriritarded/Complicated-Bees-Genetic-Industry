@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "R": "genindustry_bees:royal_ingot",
+    "E": "minecraft:echo_shard",
+    "L": "genindustry_bees:improved_labware",
+    "T": "genindustry_bees:genetic_template",
+    "A": "complicated_bees:autolyzer"
+  },
+  "pattern": [
+    "RER",
+    "LTL",
+    "RAR"
+  ],
+  "result": {
+    "id": "genindustry_bees:genetic_imprinter"
+  },
+  "show_notification": true
+}

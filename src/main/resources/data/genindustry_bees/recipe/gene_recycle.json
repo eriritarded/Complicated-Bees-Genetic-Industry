@@ -1,0 +1,9 @@
+{
+  "type": "genindustry_bees:furnace_recycling",
+  "ingredient": "genindustry_bees:gene_sample",
+  "result": {
+    "id": "genindustry_bees:gene_sample"
+  },
+  "experience": 0.1,
+  "cookingtime": 200
+}

@@ -32,7 +32,7 @@ public class JEIChromosomes {
             CompoundTag root = new CompoundTag();
             root.putString(geneSampleItem.KEY_GENE_NAME, entry.getKey().toString());
             root.put(geneSampleItem.KEY_GENE_VALUE, entry.getValue().serialize());
-            sample.setTag(root);
+            com.thesmartnoob880.genindustry_bees.port.GeneticData.set(sample,root);
             return sample;
         }).toList();
     }
@@ -43,14 +43,14 @@ public class JEIChromosomes {
 
     public static List<ItemStack> allValidBees(){
         List<ItemStack> bees = new ArrayList<>();
-        GeneticHelper.getRegistryAccess().registry(SpeciesRegistration.SPECIES_REGISTRY_KEY).get().forEach((species -> bees.addAll(validBees(species))));
+        GeneticHelper.getRegistryAccess().lookup(SpeciesRegistration.SPECIES_REGISTRY_KEY).get().forEach((species -> bees.addAll(validBees(species))));
         return bees;
     }
 
     public static ItemStack completeTemplate(Species species){
         CompoundTag root = species.getDefaultChromosome().serialize();
         ItemStack result = modItems.GENETIC_TEMPLATE.get().getDefaultInstance();
-        result.setTag(root);
+        com.thesmartnoob880.genindustry_bees.port.GeneticData.set(result,root);
         return result.copy();
     }
 }

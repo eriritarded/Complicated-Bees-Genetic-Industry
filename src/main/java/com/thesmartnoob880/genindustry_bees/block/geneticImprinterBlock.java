@@ -20,12 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class geneticImprinterBlock extends BaseEntityBlock {
+public class geneticImprinterBlock extends com.accbdd.complicated_bees.port.PortEntityBlock {
+    @Override protected com.mojang.serialization.MapCodec<geneticImprinterBlock> codec(){return simpleCodec(geneticImprinterBlock::new);}
     protected geneticImprinterBlock(Properties pProperties) {
         super(pProperties);
     }
@@ -67,16 +67,16 @@ public class geneticImprinterBlock extends BaseEntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
+    public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()){
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (entity instanceof geneticImprinterBlockEntity){
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (geneticImprinterBlockEntity)entity, pPos);
+                ((ServerPlayer)pPlayer).openMenu((geneticImprinterBlockEntity)entity,pPos);
             }else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return InteractionResult.SUCCESS;
     }
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {

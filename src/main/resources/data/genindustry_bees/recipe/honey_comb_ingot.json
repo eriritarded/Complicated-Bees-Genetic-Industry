@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:honey"
+      }
+    },
+    "I": "minecraft:copper_ingot"
+  },
+  "pattern": [
+    " C ",
+    "CIC",
+    " C "
+  ],
+  "result": {
+    "id": "genindustry_bees:honey_comb_ingot"
+  },
+  "show_notification": true
+}

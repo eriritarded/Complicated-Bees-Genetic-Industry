@@ -1,0 +1,66 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "genindustry_bees:honey_comb_ingot",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:netherite"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:netherite"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:netherite"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:netherite"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:royal"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:royal"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:royal"
+      }
+    },
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "complicated_bees:comb",
+      "components": {
+        "complicated_bees:comb_type": "complicated_bees:royal"
+      }
+    }
+  ],
+  "result": {
+    "id": "genindustry_bees:royal_ingot"
+  },
+  "show_notification": true
+}

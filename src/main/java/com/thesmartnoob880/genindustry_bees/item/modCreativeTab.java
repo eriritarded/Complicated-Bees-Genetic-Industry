@@ -8,12 +8,12 @@ import com.thesmartnoob880.genindustry_bees.block.modBlocks;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import java.util.function.Supplier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class modCreativeTab {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GenIndustryBees.MODID);
 
-    public static final RegistryObject<CreativeModeTab> MOD_ITEMS = CREATIVE_MODE_TABS.register("mod_items", () -> CreativeModeTab.builder().icon(() -> new ItemStack(modBlocks.GENOME_EXTRACTOR.get()))
+    public static final Supplier<CreativeModeTab> MOD_ITEMS = CREATIVE_MODE_TABS.register("mod_items", () -> CreativeModeTab.builder().icon(() -> new ItemStack(modBlocks.GENOME_EXTRACTOR.get()))
             .title(Component.translatable("creativeTab."+ GenIndustryBees.MODID+".modItems"))
             .displayItems((pParameters, pOutput) -> {
                 pOutput.accept(modItems.GENETIC_TEMPLATE.get());
@@ -39,11 +39,11 @@ public class modCreativeTab {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> POSSIBLE_SAMPLES = CREATIVE_MODE_TABS.register("gene_creative_tab", ()-> CreativeModeTab.builder().icon(()-> new ItemStack(modItems.GENE_SAMPLE.get()))
+    public static final Supplier<CreativeModeTab> POSSIBLE_SAMPLES = CREATIVE_MODE_TABS.register("gene_creative_tab", ()-> CreativeModeTab.builder().icon(()-> new ItemStack(modItems.GENE_SAMPLE.get()))
             .title(Component.translatable("creativeTab."+ GenIndustryBees.MODID+".possibleSamples"))
             .displayItems((pParameters, pOutput)-> {
-                HashMap<ResourceLocation, List<IGene<?>>> uniqueGenes = new HashMap<>();
-                ComplicatedBees.GENE_REGISTRY.get().getKeys().forEach((type)-> uniqueGenes.put(type, new ArrayList<>()));
+                HashMap<Identifier, List<IGene<?>>> uniqueGenes = new HashMap<>();
+                ComplicatedBees.GENE_REGISTRY.get().keySet().forEach((type)-> uniqueGenes.put(type, new ArrayList<>()));
                 pParameters.holders().lookup(SpeciesRegistration.SPECIES_REGISTRY_KEY).get().listElements().map(Holder.Reference::value).forEach((species)-> species.getDefaultChromosome().getGenes().forEach((type, gene)->{
                     List<IGene<?>> UG = uniqueGenes.get(type);
 

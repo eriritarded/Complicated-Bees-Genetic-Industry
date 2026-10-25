@@ -1,6 +1,6 @@
 package com.thesmartnoob880.genindustry_bees.util;
 
-import net.minecraftforge.energy.EnergyStorage;
+import com.accbdd.complicated_bees.port.EnergyStorage;
 
 @SuppressWarnings("ALL")
 public class customEnergyStorage extends EnergyStorage {

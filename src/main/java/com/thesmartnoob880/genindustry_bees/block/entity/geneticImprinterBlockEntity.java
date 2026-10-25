@@ -26,20 +26,18 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import com.thesmartnoob880.genindustry_bees.port.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import com.accbdd.complicated_bees.port.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.thesmartnoob880.genindustry_bees.item.geneticTemplateItem.isCompleteTemplate;
 
 @SuppressWarnings("ALL")
-public class geneticImprinterBlockEntity extends BlockEntity implements MenuProvider {
+public class geneticImprinterBlockEntity extends com.accbdd.complicated_bees.port.PortBlockEntity implements MenuProvider {
     private static final int BEE_SLOT=0;
     private static final int TEMPLATE_SLOT=1;
     private static final int OUTPUT_SLOT=0;
@@ -176,6 +174,7 @@ public class geneticImprinterBlockEntity extends BlockEntity implements MenuProv
         };
     }
 
+    public customEnergyStorage getEnergyHandler(){return energy;}
     private int errorState = 0;
 
     public int getRFCost() {
@@ -192,53 +191,37 @@ public class geneticImprinterBlockEntity extends BlockEntity implements MenuProv
         return this.maxProgress = maxProgress;
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-                return this.conjoinedItemHandler.cast();
-        } else if (cap == ForgeCapabilities.ENERGY) {
-            return this.energyOptional.cast();
-        }
-        return super.getCapability(cap, side);
-    }
+
+
+
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.inputItemHandler.invalidate();
-        this.getOutputItemHandler().invalidate();
-        this.energyOptional.invalidate();
-        this.conjoinedItemHandler.invalidate();
-        this.getUpgradeItemHandler().invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag psaveAdd) {
-        psaveAdd.put("output_inventory", this.getOutputItems().serializeNBT());
-        psaveAdd.put("input_inventory", this.getInputItems().serializeNBT());
+    protected void saveAdditional(CompoundTag psaveAdd, net.minecraft.core.HolderLookup.Provider registries) {
+        psaveAdd.put("output_inventory", this.getOutputItems().serializeNBT(registries));
+        psaveAdd.put("input_inventory", this.getInputItems().serializeNBT(registries));
         psaveAdd.putInt("genetic_imprinter.progress", this.progress);
         psaveAdd.putInt("energy",this.energy.getEnergyStored());
-        psaveAdd.put("upgrade_inventory", this.upgradeItems.serializeNBT());
-        super.saveAdditional(psaveAdd);
+        psaveAdd.put("upgrade_inventory", this.upgradeItems.serializeNBT(registries));
+        super.saveAdditional(psaveAdd, registries);
     }
 
     @Override
-    public void load(CompoundTag pLoad) {
-        super.load(pLoad);
+    public void loadAdditional(CompoundTag pLoad, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(pLoad,registries);
         if (pLoad.contains("output_inventory")) {
-            this.getOutputItems().deserializeNBT(pLoad.getCompound("output_inventory"));
+            this.getOutputItems().deserializeNBT(registries,pLoad.getCompoundOrEmpty("output_inventory"));
         }
         if (pLoad.contains("input_inventory")) {
-            this.getInputItems().deserializeNBT(pLoad.getCompound("input_inventory"));
+            this.getInputItems().deserializeNBT(registries,pLoad.getCompoundOrEmpty("input_inventory"));
         }
         if (pLoad.contains("genetic_imprinter.progress")) {
-            this.progress = pLoad.getInt("genetic_imprinter.progress");
+            this.progress = pLoad.getIntOr("genetic_imprinter.progress", 0);
         }
         if (pLoad.contains("energy")) {
-            this.energy.setEnergy(pLoad.getInt("energy"));
+            this.energy.setEnergy(pLoad.getIntOr("energy", 0));
         }
         if (pLoad.contains("upgrade_inventory")) {
-            this.upgradeItems.deserializeNBT(pLoad.getCompound("upgrade_inventory"));
+            this.upgradeItems.deserializeNBT(registries,pLoad.getCompoundOrEmpty("upgrade_inventory"));
         }
     }
 
@@ -312,23 +295,13 @@ public class geneticImprinterBlockEntity extends BlockEntity implements MenuProv
 
     private ItemStack getCraftedItem() {
         ItemStack originalBee = this.getInputItems().getStackInSlot(BEE_SLOT).copyWithCount(1);
-        CompoundTag templateData = this.getInputItems().getStackInSlot(TEMPLATE_SLOT).getTag();
+        CompoundTag templateData = com.thesmartnoob880.genindustry_bees.port.GeneticData.get(this.getInputItems().getStackInSlot(TEMPLATE_SLOT));
         if(templateData == null||originalBee.isEmpty()){
             return ItemStack.EMPTY;
         }
-        CompoundTag chromosomeA = originalBee.getTagElement("chromosome_a");
-        CompoundTag chromosomeB = originalBee.getTagElement("chromosome_b");
-        ComplicatedBees.GENE_REGISTRY.get().getEntries().forEach((entry)->{
-            String geneKey = entry.getKey().location().toString();
-            if (templateData.contains(geneKey)){
-                CompoundTag geneData = templateData.getCompound(geneKey);
-                chromosomeA.put(geneKey, geneData);
-                chromosomeB.put(geneKey, geneData);
-            }
-            if(templateData.contains("complicated_bees:species")){
-                originalBee.getTag().putString("species", templateData.getCompound("complicated_bees:species").getString("data"));
-            }
-        });
+        var chromosome=com.accbdd.complicated_bees.bees.Chromosome.deserialize(templateData);
+        com.accbdd.complicated_bees.bees.GeneticHelper.setGenome(originalBee,chromosome);
+
         return originalBee.copyWithCount(1);
     }
 
@@ -375,7 +348,7 @@ public class geneticImprinterBlockEntity extends BlockEntity implements MenuProv
     private boolean outputMatches(){
         ItemStack outputItem= this.getOutputItems().getStackInSlot(OUTPUT_SLOT);
         ItemStack craftedresult =this.getCraftedItem();
-        return (NbtUtils.compareNbt(outputItem.getTag(), craftedresult.getTag(), false)) && outputItem.getItem()==craftedresult.getItem()||outputItem == ItemStack.EMPTY;
+        return outputItem.isEmpty() || ItemStack.isSameItemSameComponents(outputItem,craftedresult);
     }
     private boolean isOutputFull(){
         return this.getOutputItems().getStackInSlot(OUTPUT_SLOT).getCount() < this.getOutputItems().getStackInSlot(OUTPUT_SLOT).getMaxStackSize();

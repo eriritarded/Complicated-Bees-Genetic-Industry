@@ -1,66 +1,31 @@
 package com.thesmartnoob880.genindustry_bees.recipe;
-
-import com.thesmartnoob880.genindustry_bees.item.geneSampleItem;
-import com.thesmartnoob880.genindustry_bees.item.modItems;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import com.thesmartnoob880.genindustry_bees.item.*;
+import com.thesmartnoob880.genindustry_bees.port.GeneticData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-
 public class RecipeGeneticTemplate extends CustomRecipe {
-    public RecipeGeneticTemplate(ResourceLocation pID, CraftingBookCategory pCatagory) {
-        super(pID, pCatagory);
-    }
-
-
-    @Override
-    public boolean matches(CraftingContainer container, @NotNull Level level) {
-        boolean hasSample= false;
-        boolean hasTemplate=false;
-
-        for (ItemStack stack: container.getItems()){
-            if (stack.getItem()== modItems.GENE_SAMPLE.get()){
-                if (hasSample) return false;
-                hasSample=true;
-            } else if (stack.getItem()== modItems.GENETIC_TEMPLATE.get()) {
-                if (hasTemplate) return false;
-                hasTemplate=true;
-            }
+    @Override public boolean matches(CraftingInput input,Level level){
+        int samples=0,templates=0;
+        for(ItemStack stack:input.items()){
+            if(stack.isEmpty())continue;
+            if(stack.is(modItems.GENE_SAMPLE.get())&&geneSampleItem.hasGeneData(stack))samples++;
+            else if(stack.is(modItems.GENETIC_TEMPLATE.get()))templates++;
+            else return false;
         }
-        return hasSample && hasTemplate;
+        return samples==1&&templates==1;
     }
-
-    @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess registryAccess) {
-        ItemStack template = null;
-        CompoundTag tag = null;
-        for (ItemStack stack: container.getItems()) {
-            if ((stack.is(modItems.GENE_SAMPLE.get())) && (stack.hasTag())){
-                tag = stack.getTag();
-            } else if (stack.is(modItems.GENETIC_TEMPLATE.get())) {
-                template = stack;
-            }
+    @Override public ItemStack assemble(CraftingInput input){
+        ItemStack sample=ItemStack.EMPTY,template=ItemStack.EMPTY;
+        for(ItemStack stack:input.items()){
+            if(stack.is(modItems.GENE_SAMPLE.get()))sample=stack;
+            else if(stack.is(modItems.GENETIC_TEMPLATE.get()))template=stack;
         }
-        if (template != null && tag != null && tag.contains(geneSampleItem.KEY_GENE_NAME) && tag.contains(geneSampleItem.KEY_GENE_VALUE)){
-            ItemStack templateCopy = template.copyWithCount(1);
-            templateCopy.getOrCreateTag().put(tag.getString(geneSampleItem.KEY_GENE_NAME), tag.getCompound(geneSampleItem.KEY_GENE_VALUE));
-            return templateCopy;
-        }else{
-            return ItemStack.EMPTY;
-        }
+        if(template.isEmpty()||!geneSampleItem.hasGeneData(sample))return ItemStack.EMPTY;
+        ItemStack result=template.copyWithCount(1);
+        var gene=GeneticData.get(sample);var genes=GeneticData.get(template);
+        genes.put(gene.getStringOr(geneSampleItem.KEY_GENE_NAME,""),gene.getCompoundOrEmpty(geneSampleItem.KEY_GENE_VALUE));
+        GeneticData.set(result,genes);return result;
     }
-
-    @Override
-    public boolean canCraftInDimensions(int i, int i1) {
-        return i >= 2 || i1 >= 2;
-    }
-
-    @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return modRecipes.GENETIC_TEMPLATE.get();
-    }
+    @Override public RecipeSerializer<RecipeGeneticTemplate> getSerializer(){return modRecipes.GENETIC_TEMPLATE.get();}
 }

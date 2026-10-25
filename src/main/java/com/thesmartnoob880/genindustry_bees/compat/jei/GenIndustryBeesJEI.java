@@ -15,9 +15,9 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 public class GenIndustryBeesJEI implements IModPlugin {
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
-        return new ResourceLocation(GenIndustryBees.MODID, "jei_plugin");
+    public @NotNull Identifier getPluginUid() {
+        return Identifier.fromNamespaceAndPath(GenIndustryBees.MODID, "jei_plugin");
     }
 
     @Override
@@ -45,15 +45,11 @@ public class GenIndustryBeesJEI implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        List<Species> species = Minecraft.getInstance().getConnection().registryAccess().registry(SpeciesRegistration.SPECIES_REGISTRY_KEY).get().stream().toList();
+        List<Species> species = Minecraft.getInstance().getConnection().registryAccess().lookup(SpeciesRegistration.SPECIES_REGISTRY_KEY).get().stream().toList();
         Stream<ItemStack> speciesTemplate = species.stream().map(JEIChromosomes::completeTemplate);
         ItemStack[] geneSamples = modCreativeTab.POSSIBLE_SAMPLES.get().getDisplayItems().toArray(new ItemStack[]{});
         registration.addRecipes(genomeExtractorCategory.TYPE, species);
         registration.addRecipes(geneticImprinterCategory.TYPE, species);
-        registration.addRecipes(RecipeTypes.SMELTING, List.of(
-                new SmeltingRecipe(new ResourceLocation(GenIndustryBees.MODID, "jei.gene_recycle"), "", CookingBookCategory.MISC, Ingredient.of(geneSamples), modItems.GENE_SAMPLE.get().getDefaultInstance(), 0.1f, 200),
-                new SmeltingRecipe(new ResourceLocation(GenIndustryBees.MODID, "jei.template_recycle"), "", CookingBookCategory.MISC, Ingredient.of(speciesTemplate), modItems.GENETIC_TEMPLATE.get().getDefaultInstance(), 0.1f, 200)
-        ));
         List<ItemStack> templateAndSamples = new ArrayList<>(List.of(modItems.GENETIC_TEMPLATE.get().getDefaultInstance()));
         templateAndSamples.addAll(List.of(geneSamples));
         registration.addIngredientInfo(templateAndSamples, VanillaTypes.ITEM_STACK, Component.translatable("genindustry_bees.jei.info.add_gene_data"));
@@ -63,15 +59,8 @@ public class GenIndustryBeesJEI implements IModPlugin {
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-        IModPlugin.super.onRuntimeAvailable(jeiRuntime);
-        List<ResourceLocation> var1 = List.of(new ResourceLocation(GenIndustryBees.MODID, "gene_recycle"), new ResourceLocation(GenIndustryBees.MODID, "template_recycle")) ;
-        jeiRuntime.getRecipeManager().hideRecipes(RecipeTypes.SMELTING, jeiRuntime.getRecipeManager().createRecipeLookup(RecipeTypes.SMELTING).get().filter(smeltingRecipe -> var1.contains(smeltingRecipe.getId())).toList());
-    }
-
-    @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.useNbtForSubtypes(modItems.GENE_SAMPLE.get());
+        registration.registerSubtypeInterpreter(modItems.GENE_SAMPLE.get(),(stack,context)->com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack));
     }
 
 
@@ -87,7 +76,7 @@ public class GenIndustryBeesJEI implements IModPlugin {
         IModPlugin.super.registerGuiHandlers(registration);
     }
 
-    public static IDrawable createDrawable(final ResourceLocation location, final int uOffset, final int vOffset, final int width, final int height, final int textureWidth, final int textureHeight) {
+    public static IDrawable createDrawable(final Identifier location, final int uOffset, final int vOffset, final int width, final int height, final int textureWidth, final int textureHeight) {
         return new IDrawable() {
             public int getWidth() {
                 return width;
@@ -97,8 +86,8 @@ public class GenIndustryBeesJEI implements IModPlugin {
                 return height;
             }
 
-            public void draw(@NotNull GuiGraphics guiGraphics, int xOffset, int yOffset) {
-                guiGraphics.blit(location, xOffset, yOffset, (float)uOffset, (float)vOffset, this.getWidth(), this.getHeight(), textureWidth, textureHeight);
+            public void draw(@NotNull GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
+                com.accbdd.complicated_bees.port.PortGui.blit(guiGraphics,location, xOffset, yOffset, (float)uOffset, (float)vOffset, this.getWidth(), this.getHeight(), textureWidth, textureHeight);
             }
         };
     }

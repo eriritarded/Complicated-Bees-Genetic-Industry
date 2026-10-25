@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "genindustry_bees:improved_labware",
+  "result": {
+    "id": "genindustry_bees:advanced_labware"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

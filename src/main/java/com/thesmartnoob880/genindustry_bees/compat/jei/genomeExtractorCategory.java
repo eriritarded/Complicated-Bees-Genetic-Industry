@@ -12,17 +12,17 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class genomeExtractorCategory implements IRecipeCategory<Species> {
 
-    public static final ResourceLocation ID = new ResourceLocation(GenIndustryBees.MODID, "jei/genome_extractor");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(GenIndustryBees.MODID, "jei/genome_extractor");
     public static final RecipeType<Species> TYPE;
     private static final Component TITLE;
     private final IDrawable ICON;
-    private final IDrawable BACKGROUND = GenIndustryBeesJEI.createDrawable(new ResourceLocation("genindustry_bees", "textures/gui/jei/genome_extractor_jei.png"), 0, 0, 176, 112, 176, 112);
+    private final IDrawable BACKGROUND = GenIndustryBeesJEI.createDrawable(Identifier.fromNamespaceAndPath("genindustry_bees", "textures/gui/jei/genome_extractor_jei.png"), 0, 0, 176, 112, 176, 112);
 
     public genomeExtractorCategory(IGuiHelper helper){
         this.ICON = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(modBlocks.GENOME_EXTRACTOR.get().asItem()));
@@ -38,7 +38,9 @@ public class genomeExtractorCategory implements IRecipeCategory<Species> {
         return TITLE;
     }
 
-    @Override
+    public void draw(Species recipe,mezz.jei.api.gui.ingredient.IRecipeSlotsView slots,net.minecraft.client.gui.GuiGraphicsExtractor graphics,double mouseX,double mouseY){BACKGROUND.draw(graphics);}
+    public int getWidth(){return BACKGROUND.getWidth();}
+    public int getHeight(){return BACKGROUND.getHeight();}
     public IDrawable getBackground() {
         return this.BACKGROUND;
     }

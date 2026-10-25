@@ -18,7 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,20 +30,18 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import com.thesmartnoob880.genindustry_bees.port.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import com.accbdd.complicated_bees.port.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 @SuppressWarnings("ALL")
-public class genomeExtractorBlockEntity extends BlockEntity implements MenuProvider {
+public class genomeExtractorBlockEntity extends com.accbdd.complicated_bees.port.PortBlockEntity implements MenuProvider {
     private static final int LABWARE_SLOT = 0;
     private static final int BEE_SLOT = 1;
     private static final int GENE_SLOT = 2;
@@ -178,6 +176,7 @@ public class genomeExtractorBlockEntity extends BlockEntity implements MenuProvi
         };
     }
 
+    public customEnergyStorage getEnergyHandler(){return energy;}
     private int errorState = 0;
 
     public int getMaxProgress() {
@@ -195,55 +194,38 @@ public class genomeExtractorBlockEntity extends BlockEntity implements MenuProvi
         return this.RF_COST = RF_COST;
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-            return this.conjoinedItemHandler.cast();
-        }else if (cap == ForgeCapabilities.ENERGY){
-            return this.energyOptional.cast();
-        }else {
-            return super.getCapability(cap, side);
-        }
-    }
+
+
+
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.inputItemHandler.invalidate();
-        this.getOutputItemHandler().invalidate();
-        this.energyOptional.invalidate();
-        this.conjoinedItemHandler.invalidate();
-        this.getUpgradeItemHandler().invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag psaveAdd) {
-        psaveAdd.put("output_inventory", this.getOutputItems().serializeNBT());
-        psaveAdd.put("input_inventory", this.getInputItems().serializeNBT());
+    protected void saveAdditional(CompoundTag psaveAdd, net.minecraft.core.HolderLookup.Provider registries) {
+        psaveAdd.put("output_inventory", this.getOutputItems().serializeNBT(registries));
+        psaveAdd.put("input_inventory", this.getInputItems().serializeNBT(registries));
         psaveAdd.putInt("genome_extractor.progress", progress);
         psaveAdd.putInt("energy", energy.getEnergyStored());
-        psaveAdd.put("upgrade_inventory", this.upgradeItems.serializeNBT());
+        psaveAdd.put("upgrade_inventory", this.upgradeItems.serializeNBT(registries));
 
-        super.saveAdditional(psaveAdd);
+        super.saveAdditional(psaveAdd, registries);
     }
 
     @Override
-    public void load(@NotNull CompoundTag pLoad) {
-        super.load(pLoad);
+    public void loadAdditional(CompoundTag pLoad, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(pLoad,registries);
             if (pLoad.contains("output_inventory")) {
-                this.getOutputItems().deserializeNBT(pLoad.getCompound("output_inventory"));
+                this.getOutputItems().deserializeNBT(registries,pLoad.getCompoundOrEmpty("output_inventory"));
             }
             if (pLoad.contains("input_inventory")) {
-                this.getInputItems().deserializeNBT(pLoad.getCompound("input_inventory"));
+                this.getInputItems().deserializeNBT(registries,pLoad.getCompoundOrEmpty("input_inventory"));
             }
             if (pLoad.contains("genome_extractor.progress")) {
-                this.progress = pLoad.getInt("genome_extractor.progress");
+                this.progress = pLoad.getIntOr("genome_extractor.progress", 0);
             }
             if (pLoad.contains("energy")) {
-                this.energy.setEnergy(pLoad.getInt("energy"));
+                this.energy.setEnergy(pLoad.getIntOr("energy", 0));
             }
             if (pLoad.contains("upgrade_inventory")) {
-                this.upgradeItems.deserializeNBT(pLoad.getCompound("upgrade_inventory"));
+                this.upgradeItems.deserializeNBT(registries,pLoad.getCompoundOrEmpty("upgrade_inventory"));
             }
     }
 
@@ -330,7 +312,7 @@ public class genomeExtractorBlockEntity extends BlockEntity implements MenuProvi
                 labwareHelper.getLabwareRate(labware.getItem()) >= random.nextDouble()
         ){
             Chromosome chromosome = GeneticHelper.getChromosome(this.getInputItems().getStackInSlot(BEE_SLOT), random.nextBoolean());
-            Map.Entry<ResourceLocation, IGene<?>> extractedGene =chromosome.getGenes().entrySet().stream().toList().get(random.nextInt(chromosome.getGenes().size()));
+            Map.Entry<Identifier, IGene<?>> extractedGene =chromosome.getGenes().entrySet().stream().toList().get(random.nextInt(chromosome.getGenes().size()));
             ItemStack result = geneSampleItem.createGene(extractedGene.getKey(), extractedGene.getValue());
             for (int index: OUTPUT_SLOTS) {
                if (this.getOutputItems().getStackInSlot(index).isEmpty()){

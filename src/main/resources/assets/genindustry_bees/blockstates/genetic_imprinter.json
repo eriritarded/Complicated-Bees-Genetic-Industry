@@ -1,9 +1,9 @@
 {
   "variants": {
     "facing=down,powered=false": {
-    "model": "genindustry_bees:block/genetic_imprinter",
-    "x": 90
-  },
+      "model": "genindustry_bees:block/genetic_imprinter",
+      "x": 90
+    },
     "facing=down,powered=true": {
       "model": "genindustry_bees:block/genetic_imprinter_active",
       "x": 90

@@ -11,34 +11,26 @@
   "item.genindustry_bees.genetic_template.dominance.true": "Dominant Gene Sample",
   "item.genindustry_bees.genetic_template.dominance.false": "Recessive Gene Sample",
   "item.genindustry_bees.genetic_template.more_info": "Hold <Shift> for more information",
-
   "block.genindustry_bees.genome_extractor": "Genome Extractor",
   "block.genindustry_bees.genetic_imprinter": "Genetic Imprinter",
-
   "item.genindustry_bees.basic_labware": "Basic Labware",
   "item.genindustry_bees.improved_labware": "Improved Labware",
   "item.genindustry_bees.advanced_labware": "Advanced Labware",
-
   "item.genindustry_bees.labware.labware_tooltip": "Gene Extraction Chance: %s",
   "item.genindustry_bees.honey_comb_ingot": "Honey Comb Ingot",
   "item.genindustry_bees.royal_ingot": "Royal Ingot",
-
   "creativeTab.genindustry_bees.modItems": "Complicated Bees: Genetic Industry",
   "creativeTab.genindustry_bees.possibleSamples": "Gene Samples",
-
   "gui.genindustry_bees.jei.genome_extractor": "Genome Extractor",
-
   "gui.genindustry_bees.gui.genome_extractor.errors.no_rf": "Not enough RF!",
   "gui.genindustry_bees.gui.genome_extractor.errors.no_bees": "Missing Princess or Drone to extract from!",
   "gui.genindustry_bees.gui.genome_extractor.errors.no_genes": "Missing Blank Gene Samples!",
   "gui.genindustry_bees.gui.genome_extractor.errors.no_labware": "Any Valid Labware is required to extract Gene Samples!",
   "gui.genindustry_bees.gui.genome_extractor.errors.output_full": "Output Slots are all full!",
-
   "gui.genindustry_bees.gui.genetic_imprinter.errors.no_rf": "Not enough RF!",
   "gui.genindustry_bees.gui.genetic_imprinter.errors.no_bees": "Missing Princess or Drone to Imprint Genes on!",
   "gui.genindustry_bees.gui.genetic_imprinter.errors.no_template": "A Complete Genetic Template Is required for Imprinting!",
   "gui.genindustry_bees.gui.genetic_imprinter.errors.output_full": "The Output Slot is full!",
-
   "gui.genindustry_bees.jei.genetic_imprinter": "Genetic Imprinter Examples",
   "genindustry_bees.jei.info.recycle": "Unwanted Gene Samples and Genetic Templates can be \"recycled\" by smelting them in a furnace to get a blank one back.",
   "genindustry_bees.jei.info.add_gene_data": "Put a Gene Sample with the Trait you want in the crafting grid with a Genetic Template to put that Trait on it.",

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "H": "complicated_bees:honey_droplet",
+    "M": "minecraft:phantom_membrane",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "HPH",
+    " M ",
+    "HPH"
+  ],
+  "result": {
+    "count": 8,
+    "id": "genindustry_bees:gene_sample"
+  },
+  "show_notification": true
+}

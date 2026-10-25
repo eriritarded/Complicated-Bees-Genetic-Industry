@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": "genindustry_bees:honey_comb_ingot",
+    "#": "complicated_bees:woven_mesh",
+    "L": "genindustry_bees:improved_labware"
+  },
+  "pattern": [
+    "I#I",
+    "#L#",
+    "I#I"
+  ],
+  "result": {
+    "id": "genindustry_bees:genetic_template"
+  },
+  "show_notification": true
+}

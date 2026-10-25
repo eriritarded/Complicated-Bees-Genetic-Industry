@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "L": "genindustry_bees:basic_labware",
+    "D": "minecraft:diamond"
+  },
+  "pattern": [
+    "LLL",
+    "LDL",
+    "LLL"
+  ],
+  "result": {
+    "id": "genindustry_bees:improved_labware"
+  },
+  "show_notification": true
+}

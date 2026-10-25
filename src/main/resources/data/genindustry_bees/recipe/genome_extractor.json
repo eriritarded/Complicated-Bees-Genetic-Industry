@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "H": "genindustry_bees:honey_comb_ingot",
+    "B": "genindustry_bees:basic_labware",
+    "M": "complicated_bees:microscope",
+    "D": "minecraft:diamond",
+    "G": "complicated_bees:gyrofuge_basic_extraction_unit"
+  },
+  "pattern": [
+    "HBH",
+    "DMD",
+    "HGH"
+  ],
+  "result": {
+    "id": "genindustry_bees:genome_extractor"
+  },
+  "show_notification": true
+}

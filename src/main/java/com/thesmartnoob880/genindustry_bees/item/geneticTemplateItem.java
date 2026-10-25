@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,9 +26,9 @@ public class geneticTemplateItem extends Item implements IGeneticHolder{
 
     public static int getGeneCount(ItemStack stack){
         int count = 0;
-        if (stack.hasTag()){
-            for (ResourceLocation geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().getKeys()) {
-                if (stack.getTag().contains(geneResourceKey.toString())){
+        if (com.thesmartnoob880.genindustry_bees.port.GeneticData.has(stack)){
+            for (Identifier geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().keySet()) {
+                if (com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack).contains(geneResourceKey.toString())){
                     count++;
                 }
             }
@@ -37,10 +37,10 @@ public class geneticTemplateItem extends Item implements IGeneticHolder{
     }
 
     public static boolean containsOneOrMoreGenes(ItemStack stack){
-        if (stack.hasTag()){
-            for (ResourceLocation geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().getKeys()) {
+        if (com.thesmartnoob880.genindustry_bees.port.GeneticData.has(stack)){
+            for (Identifier geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().keySet()) {
                 String geneKey = geneResourceKey.toString();
-                if (stack.getTag().contains(geneKey))
+                if (com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack).contains(geneKey))
                     return true;
             }
         }
@@ -48,10 +48,10 @@ public class geneticTemplateItem extends Item implements IGeneticHolder{
     }
 
     public static boolean isCompleteTemplate(ItemStack stack){
-        if (stack.hasTag()){
-            for (ResourceLocation geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().getKeys()){
+        if (com.thesmartnoob880.genindustry_bees.port.GeneticData.has(stack)){
+            for (Identifier geneResourceKey : ComplicatedBees.GENE_REGISTRY.get().keySet()){
                 String geneKey = geneResourceKey.toString();
-                if (!stack.getTag().contains(geneKey)){
+                if (!com.thesmartnoob880.genindustry_bees.port.GeneticData.get(stack).contains(geneKey)){
                     return false;
                 }
             }
@@ -61,34 +61,34 @@ public class geneticTemplateItem extends Item implements IGeneticHolder{
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level plevel, @NotNull List<Component> ptooltipComponents, @NotNull TooltipFlag pFlag) {
-       if (!pStack.hasTag()) return;
-       boolean heldShift = Screen.hasShiftDown();
-           ComplicatedBees.GENE_REGISTRY.get().getEntries().forEach((entry)->{
-               String geneKey = entry.getKey().location().toString();
+    public void appendHoverText(ItemStack pStack, TooltipContext plevel, net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> ptooltipComponents, @NotNull TooltipFlag pFlag) {
+       if (!com.thesmartnoob880.genindustry_bees.port.GeneticData.has(pStack)) return;
+       boolean heldShift = net.minecraft.client.Minecraft.getInstance().hasShiftDown();
+           ComplicatedBees.GENE_REGISTRY.get().entrySet().forEach((entry)->{
+               String geneKey = entry.getKey().identifier().toString();
                String transKey = "gene."+geneKey.replace(":", ".");
-               if (pStack.getTag().contains(geneKey)){
-                   IGene<?> deseralizedGene = entry.getValue().deserialize(pStack.getTag().getCompound(geneKey));
+               if (com.thesmartnoob880.genindustry_bees.port.GeneticData.get(pStack).contains(geneKey)){
+                   IGene<?> deseralizedGene = entry.getValue().deserialize(com.thesmartnoob880.genindustry_bees.port.GeneticData.get(pStack).getCompoundOrEmpty(geneKey));
                    MutableComponent value = deseralizedGene.getTranslationKey();
                    if (heldShift)
                        value = Component.translatable("item.genindustry_bees.genetic_template.dominance."+deseralizedGene.isDominant()).withStyle(Style.EMPTY.withColor(deseralizedGene.isDominant() ? 15086117 : 2457574));
                    else if (deseralizedGene instanceof GeneTolerant<?> tolerantGene)
                        value = value.append(" / ").append(tolerantGene.getTolerance().getTranslationKey());
-                   ptooltipComponents.add(Component.translatable(transKey+"_label").append(": ").append(value).withStyle(Style.EMPTY.withColor(geneColors.GENE_COLORS.get(entry.getValue()))));
+                   ptooltipComponents.accept(Component.translatable(transKey+"_label").append(": ").append(value).withStyle(Style.EMPTY.withColor(geneColors.GENE_COLORS.get(entry.getValue()))));
                } else if (heldShift) {
-                   ptooltipComponents.add(Component.translatable(transKey+"_label").append(": ")
+                   ptooltipComponents.accept(Component.translatable(transKey+"_label").append(": ")
                            .withStyle(Style.EMPTY.withColor(geneColors.GENE_COLORS.get(entry.getValue())))
                            .append(Component.translatable("item.genindustry_bees.genetic_template.empty").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY)));
                }
            });
            if (!heldShift&&containsOneOrMoreGenes(pStack)) {
-               ptooltipComponents.add(Component.translatable("item.genindustry_bees.genetic_template.more_info").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY));
+               ptooltipComponents.accept(Component.translatable("item.genindustry_bees.genetic_template.more_info").withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY));
            }
     }
 
     @Override
     public @NotNull Component getName(ItemStack stack) {
-        if (stack.hasTag()){
+        if (com.thesmartnoob880.genindustry_bees.port.GeneticData.has(stack)){
             if (isCompleteTemplate(stack)){
                 return Component.translatable("item.genindustry_bees.genetic_template.complete");
             } else if (containsOneOrMoreGenes(stack)){

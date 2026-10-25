@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "W": "complicated_bees:beeswax",
+    "P": "complicated_bees:propolis",
+    "B": "minecraft:glass_bottle"
+  },
+  "pattern": [
+    "WP",
+    "BB"
+  ],
+  "result": {
+    "count": 4,
+    "id": "genindustry_bees:basic_labware"
+  },
+  "show_notification": true
+}

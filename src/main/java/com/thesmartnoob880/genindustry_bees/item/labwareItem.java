@@ -17,14 +17,10 @@ public class labwareItem extends Item {
         super(properties);
     }
 
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return false;
-    }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level p_41422_, @NotNull List<Component> pTooltip, @NotNull TooltipFlag p_41424_) {
-        super.appendHoverText(pStack, p_41422_, pTooltip, p_41424_);
-        pTooltip.add(Component.translatable("item.genindustry_bees.labware.labware_tooltip", labwareHelper.getLabwareRate(pStack.getItem())*100).append("%"));
+    public void appendHoverText(@NotNull ItemStack pStack, TooltipContext p_41422_, net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> pTooltip, @NotNull TooltipFlag p_41424_) {
+        super.appendHoverText(pStack, p_41422_, display, pTooltip, p_41424_);
+        pTooltip.accept(Component.translatable("item.genindustry_bees.labware.labware_tooltip", labwareHelper.getLabwareRate(pStack.getItem())*100).append("%"));
     }
 }
