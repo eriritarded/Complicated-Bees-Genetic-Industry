@@ -1,131 +1,102 @@
+// Complicated Bees: Genetic Industry, unofficial NeoForge 26.x port.
+// Build one Minecraft target per invocation: -PmcTarget=26.1.2 (default) or -PmcTarget=26.2.
+// build-port.ps1 builds both targets with separate project caches.
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
 }
 
-version = mod_version
-group = mod_group_id
+def mcTarget = providers.gradleProperty('mcTarget').getOrElse('26.1.2')
+if (!(mcTarget in ['26.1.2', '26.2'])) throw new GradleException("Unsupported target: ${mcTarget}")
+def neoVersion = mcTarget == '26.1.2' ? '26.1.2.122' : '26.2.0.93'
+def jeiVersion = mcTarget == '26.1.2' ? '29.47.0.111' : '30.42.0.237'
+def jadeVersion = mcTarget == '26.1.2' ? '26.1.12+neoforge' : '26.2.10+neoforge'
 
-base {
-    archivesName = mod_id
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
-    copyIdeResources = true
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
+// Complicated Bees dependency: the Complicated Bees 26.x port jar for the same Minecraft target.
+// Default location: libs/<minecraft>/complicated_bees-neoforge-*.jar (exactly one).
+// Override with -PcbJar=<path to jar>. See README.md, "Complicated Bees dependency".
+def cbJar = providers.gradleProperty('cbJar').map { file(it) }.getOrElse(null)
+if (cbJar == null) {
+    def found = (file("libs/${mcTarget}").listFiles() ?: []).findAll { it.name ==~ /complicated_bees-neoforge-.*\.jar/ }
+    if (found.size() != 1) {
+        throw new GradleException("Expected exactly one Complicated Bees port jar in libs/${mcTarget}/ (found ${found.size()}). " +
+            "Build https://github.com/eriritarded/complicated_bees (branch port/26.x) for ${mcTarget} and copy " +
+            "build/${mcTarget}/libs/complicated_bees-neoforge-*.jar there, or pass -PcbJar=<path>.")
     }
+    cbJar = found[0]
 }
+if (!cbJar.isFile()) throw new GradleException("Complicated Bees jar not found: ${cbJar}")
+logger.lifecycle("Genetic Industry ${mcTarget}: compiling against ${cbJar.name}")
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+group = 'com.thesmartnoob880.genindustry_bees'
+version = "1.0.0+${mcTarget}-port.2"
+base.archivesName = 'genindustry_bees-neoforge'
+layout.buildDirectory = file("build/${mcTarget}")
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+sourceSets.main.resources.srcDir "src/targets/${mcTarget}/resources"
+sourceSets.main.java.srcDir "src/targets/${mcTarget}/java"
+sourceSets.main.resources.exclude '**/.cache/**'
 
 repositories {
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
+    maven { url = 'https://maven.blamejared.com/' }
+    maven { url = 'https://api.modrinth.com/maven' }
+}
+
+configurations { runtimeClasspath.extendsFrom localRuntime }
+
+neoForge {
+    version = neoVersion
+    runs {
+        client { client(); gameDirectory = file("run/${mcTarget}/client"); jvmArgument '-Xmx2G'; jvmArgument '-XX:ActiveProcessorCount=4'; programArguments.addAll '--width', '1280', '--height', '900' }
+        server { server(); programArgument '--nogui'; gameDirectory = file("run/${mcTarget}/server"); jvmArgument '-Xmx2G'; jvmArgument '-XX:ActiveProcessorCount=4' }
+        configureEach { logLevel = org.slf4j.event.Level.INFO }
     }
-    maven {
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
+    mods {
+        genindustry_bees { sourceSet(sourceSets.main) }
     }
-    maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
-    mavenLocal()
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-    implementation fg.deobf("curse.maven:complicated-bees-1100137:7160793")
-
-}
-
-
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1',
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-    finalizedBy 'reobfJar'
-}
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
+    // Required at runtime too; the jar is a normal NeoForge mod and is discovered on the run classpath.
+    implementation files(cbJar)
+    compileOnly "mezz.jei:jei-${mcTarget}-common-api:${jeiVersion}"
+    compileOnly "mezz.jei:jei-${mcTarget}-neoforge-api:${jeiVersion}"
+    if (providers.gradleProperty('withJei').isPresent()) localRuntime "mezz.jei:jei-${mcTarget}-neoforge:${jeiVersion}"
+    if (providers.gradleProperty('withJade').isPresent()) localRuntime "maven.modrinth:jade:${jadeVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xmaxerrs', '3000', '-Xlint:-removal']
+}
+
+tasks.named('processResources') {
+    // A file under src/targets/<minecraft>/resources replaces the shared file at the same path.
+    eachFile { entry ->
+        def overlay = file("src/targets/${mcTarget}/resources/${entry.path}")
+        if (overlay.isFile() && entry.file.canonicalFile != overlay.canonicalFile) entry.exclude()
+    }
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand mod_version: project.version, minecraft_version: mcTarget, neo_version: neoVersion
+    }
+}
+
+tasks.named('jar') { from('LICENSE.txt') }
+
+// Validation harness (dedicated server + connected client), covering this mod and Complicated Bees together.
+// Never part of an ordinary build; enabled only with -PvalidatePort or -PclientValidation.
+if (providers.gradleProperty('validatePort').isPresent() || providers.gradleProperty('clientValidation').isPresent()) {
+    sourceSets {
+        validation {
+            java.srcDir "src/validation/targets/${mcTarget}/java"
+            compileClasspath += sourceSets.main.output + configurations.compileClasspath
+            runtimeClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        }
+    }
+    neoForge.mods { bees_port_validation { sourceSet(sourceSets.validation) } }
+    if (providers.gradleProperty('clientValidation').isPresent()) {
+        neoForge.runs.configureEach { systemProperty 'bees.validation.client', 'true'; systemProperty 'bees.validation.port', mcTarget == '26.1.2' ? '25661' : '25662' }
+    }
 }
