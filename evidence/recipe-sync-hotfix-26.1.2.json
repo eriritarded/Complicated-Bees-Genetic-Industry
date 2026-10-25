@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-18T05:39:38.816045+00:00",
+  "artifact": {
+    "file": "genindustry_bees-neoforge-1.0.0+26.1.2-port.2.jar",
+    "path": "H:\\AI_MC_Modding\\ComplicatedBees\\dist\\neoforge-26.1.2\\genindustry_bees-neoforge-1.0.0+26.1.2-port.2.jar",
+    "target": "neoforge-26.1.2",
+    "modId": "genindustry_bees",
+    "kind": "playable-mod",
+    "version": "1.0.0+26.1.2-port.2",
+    "minecraft": "26.1.2",
+    "loader": "NeoForge26.1.2.122",
+    "java": "25",
+    "size": 175405,
+    "sha256": "85e9351a9abc7c63ac8005d39c830cd19f4913532eb0e065d2f4e17a3eb96603",
+    "classCount": 55,
+    "classFileMajors": [
+      69
+    ]
+  },
+  "implementation": {
+    "sourceProject": "H:\\AI_MC_Modding\\ComplicatedBees",
+    "previousPath": "H:\\AI_MC_Modding\\ComplicatedBees\\dist\\neoforge-26.1.2\\genindustry_bees-neoforge-1.0.0+26.1.2-port.1.jar",
+    "previousSha256": "cdc1866a820436a2c08bbe45ad1a579059d99e42b295f38758f1d08cda23deb3",
+    "changedEntries": [
+      "com/thesmartnoob880/genindustry_bees/recipe/modRecipes.class",
+      "META-INF/neoforge.mods.toml"
+    ],
+    "allOtherEntriesByteIdentical": true,
+    "compiledClass": "com/thesmartnoob880/genindustry_bees/recipe/modRecipes.class",
+    "compiledClassSha256": "107438ca804821e7b39b18e549dbf590ef1d9b9c3907e85081949c3ec1a69084",
+    "disassemblySha256": "5c3c003e25f53180fc9132a6e2a4223fc633737f1141e54a0b9671fbfaf29f54",
+    "compileLogSha256": "a6bbea6462ad97023e008398725cd1bf1f5700acf4f096795c8ffc0f2d317914",
+    "compileInputs": "evidence/bees-login-compile-inputs.json",
+    "sourceReview": "evidence/bees-login-source-review.json",
+    "gameLaunched": false,
+    "testsRun": false,
+    "otherTarget26_2": "Shared source corrected; no replacement26.2 package built in this task"
+  },
+  "installation": {
+    "id": "genindustry_bees",
+    "version": "1.0.0+26.1.2-port.2",
+    "path": "%USERPROFILE%\\AppData\\Roaming\\PrismLauncher\\instances\\Simply NeoForged\\minecraft\\mods\\genindustry_bees-neoforge-1.0.0+26.1.2-port.2.jar",
+    "sha256": "85e9351a9abc7c63ac8005d39c830cd19f4913532eb0e065d2f4e17a3eb96603",
+    "previousBackup": "H:\\AI_MC_Modding\\ComplicatedBees\\dist\\backups\\genetic-template-sync-port1\\cdc1866a820436a2c08bbe45ad1a579059d99e42b295f38758f1d08cda23deb3\\genindustry_bees-neoforge-1.0.0+26.1.2-port.1.jar",
+    "previousSha256": "cdc1866a820436a2c08bbe45ad1a579059d99e42b295f38758f1d08cda23deb3"
+  },
+  "combinedReceipt": "%USERPROFILE%\\Documents\\ChatGPT\\terraria_modding\\MetallurgyModern\\evidence\\bees-login-release.json",
+  "cleanupReceipt": "%USERPROFILE%\\Documents\\ChatGPT\\terraria_modding\\MetallurgyModern\\evidence\\bees-login-cleanup.json",
+  "scratchRemoved": true,
+  "otherModsFolderFilesPreserved": 43,
+  "gameLaunched": false,
+  "testsRun": false,
+  "replacementWorldLoginObserved": false,
+  "priorRuntimeValidationAppliesToNewClass": false
+}
